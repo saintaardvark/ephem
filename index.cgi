@@ -433,9 +433,9 @@ def renderHTMLFooter():
             document.write( escape( document.referrer ) );
             document.write('" height="1" width="1" style="display:none" alt="" />');
         // -->
-        </script><noscript> 
-            <img src="/axs/ax.pl?mode=img" height="1" width="1" style="display:none" alt="" /> 
-        </noscript> 
+        </script><noscript>
+            <img src="/axs/ax.pl?mode=img" height="1" width="1" style="display:none" alt="" />
+        </noscript>
         </body></html>"""
 
 
