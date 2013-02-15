@@ -403,7 +403,7 @@ def renderHTMLHead():
             <meta name="description" content="web based online ephemeris written in Python using the pyephem module" />
             <link rel="stylesheet" href="/ephemeris.css" type="text/css" />
             <link rel="shortcut icon" href="favicon.ico" />
-            <script type="text/javascript" src="js/sortable.js"></script>
+            <script type="text/javascript" src="/js/sortable.js"></script>
             <title>Online Ephemeris</title>
         </head>
         <body><div id="content">Back to <a name="top"></a><a href="/">Home</a><h1>Ephemeris</h1><p><a href="#intro"><h3>Features &amp; Help</h3></a></p>"""
