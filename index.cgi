@@ -932,7 +932,6 @@ def renderHTMLIntro():
 
 def print_timetable(param, home, messiers):
     print "<p>Hello, world!</p>"
-    altaz = params['altaz'] and ('Altitude', 'Azimuth') or ('RA', 'Dec')
     print """
 <table class="sortable" id="results_messiers" >
   <tr>
@@ -941,9 +940,6 @@ def print_timetable(param, home, messiers):
     <th>Mag</th>
     <th>Altitude</th>
     <th>Azimuth</th>
-    <th>Rise</th>
-    <th>Set</th>
-    <th>TransAlt</th>
   </tr>
     """
     for m in messiers:
@@ -952,17 +948,17 @@ def print_timetable(param, home, messiers):
             continue
         if params['minmag'] and m.mag > params['minmag']:
             continue
-        rtime,stime = getNextRiseSet(m, home)
-        if rtime[0] == -1 or stime[0] == -1:
-            # don't want to do any formatting
-            risetime = -1
-            settime = -1
-        else:
-            if not params['utc']:
-                rtime = getLocalDateTime(rtime)
-                stime = getLocalDateTime(stime)
-            risetime = '%02.0f:%02.0f' % (rtime[3], rtime[4])
-            settime = '%02.0f:%02.0f' % (stime[3], stime[4])
+        # rtime,stime = getNextRiseSet(m, home)
+        # if rtime[0] == -1 or stime[0] == -1:
+        #     # don't want to do any formatting
+        #     risetime = -1
+        #     settime = -1
+        # else:
+        #     if not params['utc']:
+        #         rtime = getLocalDateTime(rtime)
+        #         stime = getLocalDateTime(stime)
+        #     risetime = '%02.0f:%02.0f' % (rtime[3], rtime[4])
+        #     settime = '%02.0f:%02.0f' % (stime[3], stime[4])
         m.compute(home)
         #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (m.name, roundAngle(m.az), roundAngle(m.alt), m.mag)
         altazradec = params['altaz'] and (m.alt, m.az) or (m.ra, m.dec)
@@ -973,12 +969,9 @@ def print_timetable(param, home, messiers):
   <td>%.0f</td>
   <td>%s</td>
   <td>%3s</td>
-  <td>%3s</td>
-  <td>%s</td>
-  <td>%s</td>
 </tr>
         """
-        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(altazradec[0]), roundAngle(altazradec[1]), risetime, settime, roundAngle(m.transit_alt))
+        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(altazradec[0]), roundAngle(altazradec[1]))
     print '</table>'
 
 
