@@ -755,7 +755,11 @@ def setUTCDate():
         params['utc_date'] = (params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
     else:
         # from http://stackoverflow.com/questions/1357711/pytz-utc-conversion
-        d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
+        try:
+            d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
+        except TypeError:
+            # FIXME: Awful hack
+            d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'])
         tz = pytz.timezone(params['tzname'])
         _date = tz.normalize(tz.localize(d).astimezone(pytz.utc))
         params['utc_date'] = _date.utctimetuple()[:6]
@@ -776,9 +780,7 @@ def getLocalDateTime(date):
     try:
         return utc.normalize(utc.localize(datetime(*date)).astimezone(tz)).timetuple()
     except TypeError:
-
         return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
-
 
 def getMessierEdb(m):
     # Returns a string giving a Messier edb, or None if not found.  
