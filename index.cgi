@@ -940,38 +940,37 @@ def print_timetable(param, home, messiers):
     <th>Mag</th>
     <th>Altitude</th>
     <th>Azimuth</th>
+    <th>Alt +15 mins</th>
+    <th>Az +15 mins</th>
   </tr>
     """
+    orig_time = home.date
     for m in messiers:
+        home.date = orig_time
         m.compute(home)
         if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
             continue
         if params['minmag'] and m.mag > params['minmag']:
             continue
-        # rtime,stime = getNextRiseSet(m, home)
-        # if rtime[0] == -1 or stime[0] == -1:
-        #     # don't want to do any formatting
-        #     risetime = -1
-        #     settime = -1
-        # else:
-        #     if not params['utc']:
-        #         rtime = getLocalDateTime(rtime)
-        #         stime = getLocalDateTime(stime)
-        #     risetime = '%02.0f:%02.0f' % (rtime[3], rtime[4])
-        #     settime = '%02.0f:%02.0f' % (stime[3], stime[4])
         m.compute(home)
         #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (m.name, roundAngle(m.az), roundAngle(m.alt), m.mag)
-        altazradec = params['altaz'] and (m.alt, m.az) or (m.ra, m.dec)
         print_fmt = """
 <tr>
   <td class=\"tdleft\">%s</td>
   <td class=\"tdleft\">&nbsp; %3s</td>
   <td>%.0f</td>
-  <td>%s</td>
   <td>%3s</td>
-</tr>
+  <td>%3s</td>
         """
-        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(altazradec[0]), roundAngle(altazradec[1]))
+        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
+        home.date = home.date + 15 * ephem.minute
+        m.compute(home)
+        print_fmt = """
+  <td>%3s</td>
+  <td>%3s</td>
+"""
+        print print_fmt % (roundAngle(m.alt), roundAngle(m.az))
+        print "</tr>"
     print '</table>'
 
 
