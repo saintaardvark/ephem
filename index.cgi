@@ -769,7 +769,11 @@ def getLocalDateTime(date):
 #    temp2= temp.astimezone(tz)
 #    temp3 = utc.normalize(temp2)
 #    return temp3.timetuple()
-    return utc.normalize(utc.localize(datetime(*date)).astimezone(tz)).timetuple()
+    try:
+        return utc.normalize(utc.localize(datetime(*date)).astimezone(tz)).timetuple()
+    except TypeError:
+
+        return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
 
 
 def getMessierEdb(m):
