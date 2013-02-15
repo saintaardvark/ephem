@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/home/hugh/.pythonbrew/pythons/Python-2.7.2/bin/python
 #coding=utf-8
 #!/usr/bin/env python -Wignore::DeprecationWarning
 #!/usr/bin/python -Wignore::DeprecationWarning
