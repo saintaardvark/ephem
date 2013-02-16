@@ -23,4 +23,13 @@
 
 ** Alternatively: data from stellarium
 
+** Best of NGC
+   - http://messier.seds.org/xtra/similar/sac110bn.html
+   - http://messier.seds.org/xtra/similar/rasc-ngc.html
+** ARGHH!  There's already one in ephem format
+   - and there's an ephem format!
+   - http://rhodesmill.org/pyephem/catalogs
+   - http://www.maa.mhn.de/Tools/Xephem/
+
 * TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
+* 7377 Salisbury, Apt 224 (Nelson on the thing)
