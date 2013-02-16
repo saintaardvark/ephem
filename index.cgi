@@ -935,13 +935,28 @@ def print_timetable(param, home, messiers):
     print """
 <table class="sortable" id="results_messiers" >
   <tr>
-    <th>Messier</th>
-    <th>Const</th>
-    <th>Mag</th>
-    <th>Altitude</th>
-    <th>Azimuth</th>
-    <th>Alt +15 mins</th>
-    <th>Az +15 mins</th>
+    <th rowspan="2">Messier</th>
+    <th rowspan="2">Const</th>
+    <th rowspan="2">Mag</th>
+    <th colspan="2">Now</th>
+"""
+    # 1/4 hr * 3 hrs = 12
+    for i in range(1,12):
+        print """
+    <th colspan="2">+%d</th>
+""" % i
+    print """
+  </tr>
+  <tr>
+    <th>Alt</th>
+    <th>Az</th>
+"""
+    for i in range(12):
+        print """
+    <th>Alt</th>
+    <th>Az</th>
+"""
+    print """
   </tr>
     """
     orig_time = home.date
