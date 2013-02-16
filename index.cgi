@@ -1,4 +1,4 @@
-#!/home/hugh/.pythonbrew/pythons/Python-2.7.2/bin/python
+#!/home/aardvark/.pythonbrew/pythons/Python-2.7.2/bin/python
 #coding=utf-8
 #!/usr/bin/env python -Wignore::DeprecationWarning
 #!/usr/bin/python -Wignore::DeprecationWarning
@@ -401,9 +401,9 @@ def renderHTMLHead():
             <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
             <meta name="keywords" content="ephemeris, online, online epheris, xephem, python, pyephem" />
             <meta name="description" content="web based online ephemeris written in Python using the pyephem module" />
-            <link rel="stylesheet" href="/ephemeris.css" type="text/css" />
+            <link rel="stylesheet" href="/ephem/ephemeris.css" type="text/css" />
             <link rel="shortcut icon" href="favicon.ico" />
-            <script type="text/javascript" src="/js/sortable.js"></script>
+            <script type="text/javascript" src="/ephem/js/sortable.js"></script>
             <title>Online Ephemeris</title>
         </head>
         <body><div id="content">Back to <a name="top"></a><a href="/">Home</a><h1>Ephemeris</h1><p><a href="#intro"><h3>Features &amp; Help</h3></a></p>"""
