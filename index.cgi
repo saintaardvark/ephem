@@ -931,7 +931,7 @@ def renderHTMLIntro():
     """
 
 def print_timetable(param, home, messiers):
-    print "<p>Hello, world!</p>"
+    orig_time = home.date
     print """
 <table class="sortable" id="results_messiers" >
   <tr>
@@ -949,13 +949,11 @@ def print_timetable(param, home, messiers):
     print """
   </tr>
   <tr>
-    <th>Alt</th>
-    <th>Az</th>
+    <th>Alt</th><th>Az</th>
 """
     for i in range(1,13):
         print """
-    <th>Alt</th>
-    <th>Az</th>
+    <th>Alt</th><th>Az</th>
 """
     print """
   </tr>
@@ -972,10 +970,9 @@ def print_timetable(param, home, messiers):
         print_fmt = """
 <tr>
   <td class=\"tdleft\">%s</td>
-  <td class=\"tdleft\">&nbsp; %3s</td>
+  <td class=\"tdleft\">%3s</td>
   <td>%.0f</td>
-  <td>%3s</td>
-  <td>%3s</td>
+  <td>%3s</td><td>%3s</td>
         """
         print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
         for i in range(1,13):
@@ -990,13 +987,9 @@ def print_timetable(param, home, messiers):
                 print "<td class=\"%s\"> - </td>" % c
                 continue
             print_fmt = """
-  <td class="%s">%3s</td>
-  <td class="%s">%3s</td>
+  <td class="%s">%3s</td><td class="%s">%3s</td>
 """
-            print print_fmt % (c,
-                               roundAngle(m.alt),
-                               c,
-                               roundAngle(m.az))
+            print print_fmt % (c, roundAngle(m.alt), c, roundAngle(m.az))
         print "</tr>"
     print '</table>'
 
