@@ -338,6 +338,7 @@ def main():
             print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
             print print_fmt % (m.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(m.az), ephem.constellation(m)[1][:6], float(m.mag), risetime, settime, roundAngle(m.transit_alt))
         print '</table>'
+        print '<table class="sortable" id="results_ngc" ><tr><th>NGC</th><th>%s</th><th>%s</th><th>Dir</th><th>Const</th><th>Mag</th><th>Rise</th><th>Set</th><th>TransAlt</th></tr>' % altaz
         for n in params['ngc']:
             ngc.append(ephem.readdb(getNGCEdb(n.split()[0])))
         for n in ngc:
@@ -688,6 +689,17 @@ def renderForm():
             form['messierselect'] = ''
         append('<option value="%s" %s>%s</option>' % (m, form['messierselect'], m))
     messiers = "".join(list_)
+
+    params['ngc'] += ''
+    for n in ngc_list:
+        for mm in params['ngc']:
+            if m == mm:
+                form['ngcselect'] = selected
+                break
+        else:
+            form['ngcselect'] = ''
+        append('<option value="%s" %s>%s</option>' % (m, form['ngcselect'], m))
+    ngcs = "".join(list_)
 
     if params['altaz']:
         form['altazchecked'] = (checked,'')
