@@ -16,6 +16,7 @@ import warnings
 
 #   config variables
 messierdb = 'Messier.edb'
+ngcdb = 'NGC.edb'
 tlefile = 'visual.txt'
 tleurl = 'www.celestrak.com/NORAD/elements/'
 # end config
@@ -51,6 +52,7 @@ params = {
     'pressure' : None,
     'star' : [],
     'messier' : [],
+    'ngc' : [],
     'body' : None,
     'sun' : None,
     'moon' : None,
@@ -109,6 +111,7 @@ def main():
             params[key] = form.getvalue(key)
         params['star'] = form.getlist('star')                 # except that star is a special case
         params['messier'] = form.getlist('messier')                 # except that messier is a special case
+        params['ngc'] = form.getlist('ngc')
         if form.has_key('clear'):
             setCookies(clear=True)
         
@@ -309,6 +312,7 @@ def main():
 
         print '<table class="sortable" id="results_messiers" ><tr><th>Messier</th><th>%s</th><th>%s</th><th>Dir</th><th>Const</th><th>Mag</th><th>Rise</th><th>Set</th><th>TransAlt</th></tr>' % altaz
         messiers = []
+        ngc = []
         for m in params['messier']:
             messiers.append(ephem.readdb(getMessierEdb(m.split()[0])))
         for m in messiers:
@@ -333,6 +337,31 @@ def main():
             altazradec = params['altaz'] and (m.alt, m.az) or (m.ra, m.dec)
             print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
             print print_fmt % (m.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(m.az), ephem.constellation(m)[1][:6], float(m.mag), risetime, settime, roundAngle(m.transit_alt))
+        print '</table>'
+        for n in params['ngc']:
+            ngc.append(ephem.readdb(getNGCEdb(n.split()[0])))
+        for n in ngc:
+            n.compute(home)
+            if params['above_horiz'] and n.alt < 0:                                   # only bother if star is above the horizon
+                continue
+            if params['minmag'] and n.mag > params['minmag']:
+                continue
+            rtime,stime = getNextRiseSet(n, home)
+            if rtime[0] == -1 or stime[0] == -1:
+                # don't want to do any formatting
+                risetime = -1
+                settime = -1
+            else:
+                if not params['utc']:
+                    rtime = getLocalDateTime(rtime)
+                    stime = getLocalDateTime(stime)
+                risetime = '%02.0f:%02.0f' % (rtime[3], rtime[4])
+                settime = '%02.0f:%02.0f' % (stime[3], stime[4])
+            n.compute(home)
+            #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (n.name, roundAngle(n.az), roundAngle(n.alt), n.mag)
+            altazradec = params['altaz'] and (n.alt, n.az) or (n.ra, n.dec)
+            print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+            print print_fmt % (n.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(n.az), ephem.constellation(n)[1][:6], float(n.mag), risetime, settime, roundAngle(n.transit_alt))
         print '</table>'
         if params['timetable'] == True:
             print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
@@ -728,6 +757,10 @@ def renderForm():
     print stars
     print '</select> <select name="messier" multiple="multiple" size="15" >'
     print messiers
+    print '</select> <select name="ngc" multiple="multiple" size="15">'
+    for i in range (1,7841):
+        # FIXME: Hack
+        print """ <option value="NGC %d">NGC %d</option> """ % (i, i)
     print """
     </select></fieldset></fieldset>
     <fieldset><legend>Results</legend>
@@ -788,6 +821,20 @@ def getMessierEdb(m):
     edb = None
     try:
         with open(messierdb) as f:
+            for line in f:
+                if line.startswith(m):
+                    edb = line
+                    break
+    except:
+        pass
+    return edb
+
+def getNGCEdb(m):
+    # Returns a string giving a NGC edb, or None if not found.
+    # Note use of with...as syntax obviates need for f.close(): happens automatically when 'with' block exits.
+    edb = None
+    try:
+        with open(ngcdb) as f:
             for line in f:
                 if line.startswith(m):
                     edb = line
