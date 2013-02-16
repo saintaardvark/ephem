@@ -941,7 +941,7 @@ def print_timetable(param, home, messiers):
     <th colspan="2">Now</th>
 """
     # 1/4 hr * 3 hrs = 12
-    for i in range(1,12):
+    for i in range(1,13):
         print """
     <th colspan="2">+%d</th>
 """ % i
@@ -951,7 +951,7 @@ def print_timetable(param, home, messiers):
     <th>Alt</th>
     <th>Az</th>
 """
-    for i in range(12):
+    for i in range(1,13):
         print """
     <th>Alt</th>
     <th>Az</th>
@@ -978,7 +978,7 @@ def print_timetable(param, home, messiers):
   <td>%3s</td>
         """
         print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
-        for i in range(1,12):
+        for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
             else:
