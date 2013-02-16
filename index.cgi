@@ -942,7 +942,7 @@ def print_timetable(param, home, messiers):
 """
     # 1/4 hr * 3 hrs = 12
     for i in range(1,13):
-        home.date = home.date + i * 15 * ephem.minute
+        home.date += (15 * ephem.minute)
         print """
     <th colspan="2">%s</th>
 """ % (datetime(*getLocalDateTime(home.date.tuple())[:6]).strftime("%R"))
