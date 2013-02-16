@@ -1,0 +1,8 @@
+
+* TODO Localtime not actually showing up as local time; displayed as UTC
+* DONE Figure out how to do the timetable part: add 15 minutes at a time
+  CLOSED: [2013-02-15 Fri 18:01]
+
+* TODO Better column/row display (CSS, alt colours, etc)
+* TODO NGC objects!
+* TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
