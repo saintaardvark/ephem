@@ -980,7 +980,7 @@ def print_timetable(param, home, messiers):
                 c = "odd"
             else:
                 c = "even"
-            home.date = home.date + i * 15 * ephem.minute
+            home.date += 15 * ephem.minute
             m.compute(home)
             if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
                 print "<td class=\"%s\"> - </td>" % c
