@@ -5,4 +5,22 @@
 
 * TODO Better column/row display (CSS, alt colours, etc)
 * TODO NGC objects!
+** http://www.ngcicproject.org/public_HCNGC/HCNGC.htm
+   - wget http://www.ngcicproject.org/public_HCNGC/Public_HCNGC.txt
+   - Delimited! http://www.ngcicproject.org/public_HCNGC/DPublic_HCNGC.txt
+     - head -20 DPublic_HCNGC.org | awk -F"|" '{print $2, $9, $7, $8, $19, $17, $15, $16}'
+     - Columns:
+       - NGC (1)
+       - RA (6)
+       - Dec (7)
+       - Const (8)
+       - Desc (9)
+       - Obj Type (14)
+       - Obj Class (15)
+       - Size (16)
+       - VMag (17)
+       - Also catalogued as (21)
+
+** Alternatively: data from stellarium
+
 * TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
