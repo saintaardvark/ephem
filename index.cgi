@@ -978,13 +978,14 @@ def print_timetable(param, home, messiers):
   <td>%3s</td>
         """
         print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
-        home.date = home.date + 15 * ephem.minute
-        m.compute(home)
-        print_fmt = """
+        for i in range(1,12):
+            home.date = home.date + i * 15 * ephem.minute
+            m.compute(home)
+            print_fmt = """
   <td>%3s</td>
   <td>%3s</td>
 """
-        print print_fmt % (roundAngle(m.alt), roundAngle(m.az))
+            print print_fmt % (roundAngle(m.alt), roundAngle(m.az))
         print "</tr>"
     print '</table>'
 
