@@ -340,7 +340,7 @@ def main():
         print '</table>'
         print '<table class="sortable" id="results_ngc" ><tr><th>NGC</th><th>%s</th><th>%s</th><th>Dir</th><th>Const</th><th>Mag</th><th>Rise</th><th>Set</th><th>TransAlt</th></tr>' % altaz
         for n in params['ngc']:
-            ngc.append(ephem.readdb(getNGCEdb(n.split()[0])))
+            ngc.append(ephem.readdb(getNGCEdb(n)))
         for n in ngc:
             n.compute(home)
             if params['above_horiz'] and n.alt < 0:                                   # only bother if star is above the horizon
