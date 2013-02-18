@@ -367,6 +367,7 @@ def main():
         if params['timetable'] == True:
             print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
             print_timetable(params, home, messiers)
+            print_timetable(params, home, ngc)
         tock = datetime.now()
         print "<p><small>Done in %s.</small></p>" % ( tock - tick)
     print """</div><!-- output -->
@@ -990,12 +991,12 @@ def renderHTMLIntro():
     </div><!-- intro -->
     """
 
-def print_timetable(param, home, messiers):
+def print_timetable(param, home, list):
     orig_time = home.date
     print """
 <table class="sortable" id="results_messiers" >
   <tr>
-    <th rowspan="2">Messier</th>
+    <th rowspan="2">Object</th>
     <th rowspan="2">Const</th>
     <th rowspan="2">Mag</th>
     <th colspan="2">Now</th>
@@ -1018,14 +1019,14 @@ def print_timetable(param, home, messiers):
     print """
   </tr>
     """
-    for m in messiers:
+    for j in list:
         home.date = orig_time
-        m.compute(home)
-        if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
+        j.compute(home)
+        if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
             continue
-        if params['minmag'] and m.mag > params['minmag']:
+        if params['minmag'] and j.mag > params['minmag']:
             continue
-        m.compute(home)
+        j.compute(home)
         #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (m.name, roundAngle(m.az), roundAngle(m.alt), m.mag)
         print_fmt = """
 <tr>
@@ -1034,22 +1035,22 @@ def print_timetable(param, home, messiers):
   <td>%.0f</td>
   <td>%3s</td><td>%3s</td>
         """
-        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
+        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), roundAngle(j.alt), roundAngle(j.az))
         for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
             else:
                 c = "even"
             home.date += 15 * ephem.minute
-            m.compute(home)
-            if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
+            j.compute(home)
+            if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
                 print "<td class=\"%s\"> - </td>" % c
                 print "<td class=\"%s\"> - </td>" % c
                 continue
             print_fmt = """
   <td class="%s">%3s</td><td class="%s">%3s</td>
 """
-            print print_fmt % (c, roundAngle(m.alt), c, roundAngle(m.az))
+            print print_fmt % (c, roundAngle(j.alt), c, roundAngle(j.az))
         print "</tr>"
     print '</table>'
 
