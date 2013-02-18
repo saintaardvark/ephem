@@ -1,4 +1,4 @@
-
+* TODO Break out config to separate file or *something*.
 * TODO Localtime not actually showing up as local time; displayed as UTC
 * DONE Figure out how to do the timetable part: add 15 minutes at a time
   CLOSED: [2013-02-15 Fri 18:01]
