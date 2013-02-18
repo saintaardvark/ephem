@@ -781,7 +781,7 @@ def renderForm():
      <br />&nbsp;&nbsp;RA/Dec<input type="radio" name="altaz" value="False" %s />
      <br />Only objects above horizon?<input type="checkbox" name="above_horiz" value="True" %s />
      <br />Only brighter than<input type="text" value="%s" name="minmag" size="3" />magnitude (lower is brighter)
-     <br />Six hour timetable?<input type="checkbox" name="timetable" value="True" %s />
+     <br />Three hour timetable?<input type="checkbox" name="timetable" value="True" %s />
     </fieldset>
     <fieldset><legend><b>Go</b></legend>
     <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',) + (params['timetable'] and 'checked="checked"' or '',))
