@@ -578,6 +578,8 @@ def renderForm():
     #city_list.sort()
     messier_list = ( 'M1 Crab Nebula', 'M2', 'M3', 'M4', 'M5', 'M6 Butterfly Cluster', 'M7 Ptolemy\'s Cluster', 'M8 Lagoon Nebula', 'M9', 'M10', 'M11 Wild Duck Cluster', 'M12', 'M13 Hercules Cluster', 'M14', 'M15', 'M16 Eagle Nebula, Star Queen Nebula', 'M17 Omega Nebula, Swan Nebula, Lobster Nebula', 'M18', 'M19', 'M20 Trifid Nebula', 'M21', 'M22', 'M23', 'M24 Delle Caustiche', 'M25', 'M26', 'M27 Dumbbell Nebula', 'M28', 'M29', 'M30', 'M31 Andromeda Galaxy', 'M32', 'M33 Triangulum Galaxy', 'M34', 'M35', 'M36', 'M37', 'M38', 'M39', 'M40 Double Star WNC4', 'M41', 'M42 Orion Nebula', 'M43 de Mairan\'s nebula; part of Orion Nebula', 'M44 Praesepe, Beehive Cluster', 'M45 Subaru, Pleiades, Seven Sisters', 'M46', 'M47', 'M48', 'M49', 'M50', 'M51 Whirlpool Galaxy', 'M52', 'M53', 'M54', 'M55', 'M56', 'M57 Ring Nebula', 'M58', 'M59', 'M60', 'M61', 'M62', 'M63 Sunflower Galaxy', 'M64 Blackeye Galaxy', 'M65', 'M66', 'M67', 'M68', 'M69', 'M70', 'M71', 'M72', 'M73', 'M74', 'M75', 'M76 Little Dumbbell Nebula, Cork Nebula', 'M77', 'M78', 'M79', 'M80', 'M81 Bode\'s Galaxy', 'M82 Cigar Galaxy', 'M83 Southern Pinwheel Galaxy', 'M84', 'M85', 'M86', 'M87 Virgo A', 'M88', 'M89', 'M90', 'M91', 'M92', 'M93', 'M94', 'M95', 'M96', 'M97 Owl Nebula', 'M98', 'M99', 'M100', 'M101 Pinwheel Galaxy', 'M102 Spindle Galaxy', 'M103', 'M104 Sombrero Galaxy', 'M105', 'M106', 'M107', 'M108', 'M109', 'M110')
     ngc_list = [ ]
+    for i in range(1,7841):
+        ngc_list.append("NGC %d" % i)
     form = {}
     checked = 'checked="checked"'                       # used often enough to treat it as a quasi constant
     selected = 'selected="selected"'
