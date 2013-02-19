@@ -1,4 +1,4 @@
-#!/home/aardvark/.pythonbrew/pythons/Python-2.7.2/bin/python
+#!/home/hugh/.pythonbrew/pythons/Python-2.7.2/bin/python
 #coding=utf-8
 #!/usr/bin/env python -Wignore::DeprecationWarning
 #!/usr/bin/python -Wignore::DeprecationWarning
@@ -702,7 +702,7 @@ def renderForm():
     params['ngc'] += ''
     for n in ngc_list:
         for mm in params['ngc']:
-            if m == mm:
+            if n == mm:
                 form['ngcselect'] = selected
                 break
         else:
