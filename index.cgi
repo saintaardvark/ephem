@@ -420,6 +420,11 @@ def roundAngle(angle):
     # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
     return str(angle).split(":")[0]
 
+def floatAngle(angle):
+    """ return the float degrees part of the string representation of an angle"""
+    # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
+#    return str(angle).split(":")[0] + str(angle).split(":")[2] / 60
+    return (int(str(angle).split(":")[0]) + float(int(str(angle).split(":")[1])) / 60)
 
 def azDirection(az):
     """ return the direction (North, South, North-East etc, shown as N, S, NE) for an azimuth"""
@@ -1041,9 +1046,9 @@ def print_timetable(param, home, list):
   <td class=\"tdleft\">%s</td>
   <td class=\"tdleft\">%3s</td>
   <td>%.0f</td>
-  <td>%3s</td><td>%3s</td>
+  <td>%.1f</td><td>%.1f</td>
         """
-        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), roundAngle(j.alt), roundAngle(j.az))
+        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), floatAngle(j.alt), floatAngle(j.az))
         for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
@@ -1056,9 +1061,9 @@ def print_timetable(param, home, list):
                 print "<td class=\"%s\"> - </td>" % c
                 continue
             print_fmt = """
-  <td class="%s">%3s</td><td class="%s">%3s</td>
+  <td class="%s">%.1f</td><td class="%s">%.1f</td>
 """
-            print print_fmt % (c, roundAngle(j.alt), c, roundAngle(j.az))
+            print print_fmt % (c, floatAngle(j.alt), c, floatAngle(j.az))
         print "</tr>"
     print '</table>'
     home.date = orig_time
