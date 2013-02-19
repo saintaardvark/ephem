@@ -1,5 +1,49 @@
 * TODO Break out config to separate file or *something*.
 * TODO Localtime not actually showing up as local time; displayed as UTC
+  - Test case #1: 
+    - click now
+    - select UTC
+    - Submit
+    - Says:
+      - For time: 2013-02-19 00:43 Local
+      - 2013-02-19 00:43 UTC
+      - The UTC is correct; the local time is not.  This is going by
+        pos in Stellarium; the pos is correct for now/00:43 UTC, it's
+        just the local time that needs to be corrected.
+  - So:  
+    - Localtime is datetime(*getLocalDateTime(home.date.tuple())[:6]).strftime("%F %R")
+    - UTC is:				      home.date.datetime().strftime("%F %R")
+  - So what's wrong with getLocalDateTIme?
+    - tz is getting set correctly.
+    - Aha -- pytz.utc.normalize?
+      - Yes: that appears to set the time to utc.  If I unset that,
+        seems to work: for Test Case #1 described above, time displayed
+        is local; UTC is sane; positions make sense.
+  - But now another problem.
+  - Test Case #2:
+    - Click now
+    - select Local, ensure Canada/Pacific checked
+    - Submit
+    - Error
+      - Line 842: astimezone() cannot be applied to a naive datetime
+      - That line:
+      - Line 842: astimezone() cannot be applied to a naive datetime
+        return utc.localize(datetime(*date).astimezone(tz)).timetuple()
+      - That's in getLocaldateTime too...
+  - Not sure what that means.  Tried adding: 
+    ,----
+    |except ValueError:
+    |    return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
+    `----
+  - but no good; another error...wait, no: wrong times.  I was sure I
+    got an error before...
+    - Wrong times:  click now, Local timezone.
+    - For time:
+      - 2013-02-19 01:15 Local
+      - 2013-02-19 09:15 UTC
+      - ..which is just very, very bogus.
+  - Bug: ngc getting set to 3 hr ahead when 3 hr chart sel!
+
 * DONE Figure out how to do the timetable part: add 15 minutes at a time
   CLOSED: [2013-02-15 Fri 18:01]
 
