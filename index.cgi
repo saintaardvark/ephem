@@ -1055,6 +1055,7 @@ def print_timetable(param, home, list):
             print print_fmt % (c, roundAngle(j.alt), c, roundAngle(j.az))
         print "</tr>"
     print '</table>'
+    home.date = orig_time
 
 
 if __name__ == '__main__':
