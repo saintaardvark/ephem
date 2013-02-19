@@ -1,6 +1,6 @@
 * TODO Break out config to separate file or *something*.
-* TODO Localtime not actually showing up as local time; displayed as UTC
-  - Test case #1: 
+* TODO Localtime works if you select UTC; if you select localtime, adds 8 hours and goes from there.
+** Test case #1 (now working)
     - click now
     - select UTC
     - Submit
@@ -20,7 +20,7 @@
         seems to work: for Test Case #1 described above, time displayed
         is local; UTC is sane; positions make sense.
   - But now another problem.
-  - Test Case #2:
+** Test Case #2 (where the bug is now)
     - Click now
     - select Local, ensure Canada/Pacific checked
     - Submit
@@ -42,13 +42,19 @@
       - 2013-02-19 01:15 Local
       - 2013-02-19 09:15 UTC
       - ..which is just very, very bogus.
-  - Bug: ngc getting set to 3 hr ahead when 3 hr chart sel!
+    - But the positions for the time apear to be correct -- judging by
+      the moon, anyhow.
+      - So it looks like it's just guessing the wrong time: adding 8
+        hours to get local time, then adding 8 hours to *that* to get
+        UTC.  Positions are correct, just wrong guess.
+      - Leaving this for now.
 
 * DONE Figure out how to do the timetable part: add 15 minutes at a time
   CLOSED: [2013-02-15 Fri 18:01]
 
 * TODO Better column/row display (CSS, alt colours, etc)
-* TODO NGC objects!
+* DONE NGC objects!
+  CLOSED: [2013-02-19 Tue 07:54]
 ** http://www.ngcicproject.org/public_HCNGC/HCNGC.htm
    - wget http://www.ngcicproject.org/public_HCNGC/Public_HCNGC.txt
    - Delimited! http://www.ngcicproject.org/public_HCNGC/DPublic_HCNGC.txt
@@ -76,4 +82,4 @@
    - http://www.maa.mhn.de/Tools/Xephem/
 
 * TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
-* 7377 Salisbury, Apt 224 (Nelson on the thing)
+* TODO Best of NGC
