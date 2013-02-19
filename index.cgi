@@ -367,6 +367,7 @@ def main():
         if params['timetable'] == True:
             print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
             print_timetable(params, home, messiers)
+            print_timetable(params, home, ngc)
         tock = datetime.now()
         print "<p><small>Done in %s.</small></p>" % ( tock - tick)
     print """</div><!-- output -->
@@ -576,6 +577,9 @@ def renderForm():
     #city_list = ephem.cities._city_data.keys()     # this doesn't work, cities not found?
     #city_list.sort()
     messier_list = ( 'M1 Crab Nebula', 'M2', 'M3', 'M4', 'M5', 'M6 Butterfly Cluster', 'M7 Ptolemy\'s Cluster', 'M8 Lagoon Nebula', 'M9', 'M10', 'M11 Wild Duck Cluster', 'M12', 'M13 Hercules Cluster', 'M14', 'M15', 'M16 Eagle Nebula, Star Queen Nebula', 'M17 Omega Nebula, Swan Nebula, Lobster Nebula', 'M18', 'M19', 'M20 Trifid Nebula', 'M21', 'M22', 'M23', 'M24 Delle Caustiche', 'M25', 'M26', 'M27 Dumbbell Nebula', 'M28', 'M29', 'M30', 'M31 Andromeda Galaxy', 'M32', 'M33 Triangulum Galaxy', 'M34', 'M35', 'M36', 'M37', 'M38', 'M39', 'M40 Double Star WNC4', 'M41', 'M42 Orion Nebula', 'M43 de Mairan\'s nebula; part of Orion Nebula', 'M44 Praesepe, Beehive Cluster', 'M45 Subaru, Pleiades, Seven Sisters', 'M46', 'M47', 'M48', 'M49', 'M50', 'M51 Whirlpool Galaxy', 'M52', 'M53', 'M54', 'M55', 'M56', 'M57 Ring Nebula', 'M58', 'M59', 'M60', 'M61', 'M62', 'M63 Sunflower Galaxy', 'M64 Blackeye Galaxy', 'M65', 'M66', 'M67', 'M68', 'M69', 'M70', 'M71', 'M72', 'M73', 'M74', 'M75', 'M76 Little Dumbbell Nebula, Cork Nebula', 'M77', 'M78', 'M79', 'M80', 'M81 Bode\'s Galaxy', 'M82 Cigar Galaxy', 'M83 Southern Pinwheel Galaxy', 'M84', 'M85', 'M86', 'M87 Virgo A', 'M88', 'M89', 'M90', 'M91', 'M92', 'M93', 'M94', 'M95', 'M96', 'M97 Owl Nebula', 'M98', 'M99', 'M100', 'M101 Pinwheel Galaxy', 'M102 Spindle Galaxy', 'M103', 'M104 Sombrero Galaxy', 'M105', 'M106', 'M107', 'M108', 'M109', 'M110')
+    ngc_list = [ ]
+    for i in range(1,7841):
+        ngc_list.append("NGC %d" % i)
     form = {}
     checked = 'checked="checked"'                       # used often enough to treat it as a quasi constant
     selected = 'selected="selected"'
@@ -780,7 +784,7 @@ def renderForm():
      <br />&nbsp;&nbsp;RA/Dec<input type="radio" name="altaz" value="False" %s />
      <br />Only objects above horizon?<input type="checkbox" name="above_horiz" value="True" %s />
      <br />Only brighter than<input type="text" value="%s" name="minmag" size="3" />magnitude (lower is brighter)
-     <br />Six hour timetable?<input type="checkbox" name="timetable" value="True" %s />
+     <br />Three hour timetable?<input type="checkbox" name="timetable" value="True" %s />
     </fieldset>
     <fieldset><legend><b>Go</b></legend>
     <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',) + (params['timetable'] and 'checked="checked"' or '',))
@@ -989,12 +993,12 @@ def renderHTMLIntro():
     </div><!-- intro -->
     """
 
-def print_timetable(param, home, messiers):
+def print_timetable(param, home, list):
     orig_time = home.date
     print """
 <table class="sortable" id="results_messiers" >
   <tr>
-    <th rowspan="2">Messier</th>
+    <th rowspan="2">Object</th>
     <th rowspan="2">Const</th>
     <th rowspan="2">Mag</th>
     <th colspan="2">Now</th>
@@ -1017,14 +1021,14 @@ def print_timetable(param, home, messiers):
     print """
   </tr>
     """
-    for m in messiers:
+    for j in list:
         home.date = orig_time
-        m.compute(home)
-        if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
+        j.compute(home)
+        if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
             continue
-        if params['minmag'] and m.mag > params['minmag']:
+        if params['minmag'] and j.mag > params['minmag']:
             continue
-        m.compute(home)
+        j.compute(home)
         #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (m.name, roundAngle(m.az), roundAngle(m.alt), m.mag)
         print_fmt = """
 <tr>
@@ -1033,22 +1037,22 @@ def print_timetable(param, home, messiers):
   <td>%.0f</td>
   <td>%3s</td><td>%3s</td>
         """
-        print print_fmt % (m.name, ephem.constellation(m)[1][:6], float(m.mag), roundAngle(m.alt), roundAngle(m.az))
+        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), roundAngle(j.alt), roundAngle(j.az))
         for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
             else:
                 c = "even"
             home.date += 15 * ephem.minute
-            m.compute(home)
-            if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
+            j.compute(home)
+            if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
                 print "<td class=\"%s\"> - </td>" % c
                 print "<td class=\"%s\"> - </td>" % c
                 continue
             print_fmt = """
   <td class="%s">%3s</td><td class="%s">%3s</td>
 """
-            print print_fmt % (c, roundAngle(m.alt), c, roundAngle(m.az))
+            print print_fmt % (c, roundAngle(j.alt), c, roundAngle(j.az))
         print "</tr>"
     print '</table>'
 
