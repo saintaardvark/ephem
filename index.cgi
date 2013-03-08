@@ -20,10 +20,10 @@ tlefile = 'visual.txt'
 tleurl = 'www.celestrak.com/NORAD/elements/'
 # end config
 
-# params notes:  
-# date and time are stored as entered by user, 
-# utc_date tuple is that converted to UTC; 
-# utc is boolean indicating whether user is using UTC or local. 
+# params notes:
+# date and time are stored as entered by user,
+# utc_date tuple is that converted to UTC;
+# utc is boolean indicating whether user is using UTC or local.
 # now is used to indicate whether to override the date with the current time.
 # save indicates whether to save settings with cookies
 
@@ -47,7 +47,7 @@ params = {
     'lat' : None,
     'long' : None,
     'elev' : None,
-    'temp' : None, 
+    'temp' : None,
     'pressure' : None,
     'star' : [],
     'messier' : [],
@@ -110,7 +110,7 @@ def main():
         params['messier'] = form.getlist('messier')                 # except that messier is a special case
         if form.has_key('clear'):
             setCookies(clear=True)
-        
+
     # do cookies processing
     elif cookie.has_key('save'):
         for key in cookie.keys():
@@ -149,7 +149,7 @@ def main():
             params[key] = float(params[key])        # do it
         except:
             pass                                    # else, don't do it.
-    
+
     # do form processing
     if params['processed']:
         for key in ('minute', 'hour', 'day', 'month'):
@@ -251,10 +251,10 @@ def main():
             <tr><td>Next</td><td>%s:</td><td>%d-%02d-%02d %02d:%02d</td></tr>
             <tr><td></td><td>%s:</td><td>%d-%02d-%02d %02d:%02d</td></tr>
             <tr><td></td><td>%s:</td><td>%d-%02d-%02d %02d:%02d</td></tr></table>""" % (
-            moons[moon_keys[0]], moon_keys[0][0], moon_keys[0][1], moon_keys[0][2], moon_keys[0][3], moon_keys[0][4], 
-            moons[moon_keys[1]], moon_keys[1][0], moon_keys[1][1], moon_keys[1][2], moon_keys[1][3], moon_keys[1][4], 
+            moons[moon_keys[0]], moon_keys[0][0], moon_keys[0][1], moon_keys[0][2], moon_keys[0][3], moon_keys[0][4],
+            moons[moon_keys[1]], moon_keys[1][0], moon_keys[1][1], moon_keys[1][2], moon_keys[1][3], moon_keys[1][4],
             moons[moon_keys[2]], moon_keys[2][0], moon_keys[2][1], moon_keys[2][2], moon_keys[2][3], moon_keys[2][4],
-            moons[moon_keys[3]], moon_keys[3][0], moon_keys[3][1], moon_keys[3][2], moon_keys[3][3], moon_keys[3][4], 
+            moons[moon_keys[3]], moon_keys[3][0], moon_keys[3][1], moon_keys[3][2], moon_keys[3][3], moon_keys[3][4],
             moons[moon_keys[4]], moon_keys[4][0], moon_keys[4][1], moon_keys[4][2], moon_keys[4][3], moon_keys[4][4],
             moons[moon_keys[5]], moon_keys[5][0], moon_keys[5][1], moon_keys[5][2], moon_keys[5][3], moon_keys[5][4])
         altaz = params['altaz'] and ('Altitude', 'Azimuth') or ('RA', 'Dec')
@@ -284,7 +284,7 @@ def main():
             stars.append(ephem.star(s))
         for s in stars:
             s.compute(home)
-            if params['above_horiz'] and s.alt < 0:                                   # only bother if star is above the horizon 
+            if params['above_horiz'] and s.alt < 0:                                   # only bother if star is above the horizon
                 continue
             if params['minmag'] and s.mag > params['minmag']:                       # only bother if star is brighter than ( < ) X
                 continue
@@ -312,7 +312,7 @@ def main():
             messiers.append(ephem.readdb(getMessierEdb(m.split()[0])))
         for m in messiers:
             m.compute(home)
-            if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon 
+            if params['above_horiz'] and m.alt < 0:                                   # only bother if star is above the horizon
                 continue
             if params['minmag'] and m.mag > params['minmag']:
                 continue
@@ -391,7 +391,7 @@ def azDirection(az):
 
 def renderHTMLHead():
     #print """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    print """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+    print """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         <head>
@@ -427,7 +427,7 @@ def renderHTMLFooter():
             }
 
         </script>
-        <script type="text/javascript"> 
+        <script type="text/javascript">
         <!--
             document.write('<img src="/axs/ax.pl?mode=img&ref=');
             document.write( escape( document.referrer ) );
@@ -442,10 +442,10 @@ def renderHTMLFooter():
 def setCookies(clear=False):
     cookie = Cookie.SimpleCookie()
     if clear:
-        expire = -1                                  # 
+        expire = -1                                  #
     else:
         expire = 63072000                           # 2 years in seconds
-    for key in ('hour', 'minute', 'day', 'month', 'year', 'now', 'utc', 'tzname', 'city', 'lat', 'long', 'elev', 'save'): 
+    for key in ('hour', 'minute', 'day', 'month', 'year', 'now', 'utc', 'tzname', 'city', 'lat', 'long', 'elev', 'save'):
         cookie[key] = params[key]
         cookie[key]['path'] = '/ephem'
         if params[key]:                             # avoid None or False params
@@ -589,7 +589,7 @@ def renderForm():
 
     form['year'] = params['year']
     if params['now']:
-        form['nowchecked'] = checked 
+        form['nowchecked'] = checked
     else:
         form['nowchecked'] =  ''
 
@@ -720,7 +720,7 @@ def renderForm():
     <input disabled="yes" type="checkbox" name="uranus" value="True" checked="checked"/> Uranus<br />
     <input disabled="yes" type="checkbox" name="neptune" value="True" checked="checked"/> Neptune<br />
     </fieldset><fieldset><legend>Stars &amp; Nebulae</legend>
-    <small>Multiple selections use the control key.  For your convenience: <a href="http://en.wikipedia.org/wiki/List_of_Messier_objects" target=\"_blank\">list of Messiers</a></small><br /> 
+    <small>Multiple selections use the control key.  For your convenience: <a href="http://en.wikipedia.org/wiki/List_of_Messier_objects" target=\"_blank\">list of Messiers</a></small><br />
     <select name="star" multiple="multiple" size="15"> """ % form
     print stars
     print '</select> <select name="messier" multiple="multiple" size="15" >'
@@ -773,7 +773,7 @@ def getLocalDateTime(date):
 
 
 def getMessierEdb(m):
-    # Returns a string giving a Messier edb, or None if not found.  
+    # Returns a string giving a Messier edb, or None if not found.
     # Note use of with...as syntax obviates need for f.close(): happens automatically when 'with' block exits.
     edb = None
     try:
@@ -788,7 +788,7 @@ def getMessierEdb(m):
 
 def getCrescentMoon(home, date):
     """ return the next date time in ephem format of crescent moon
-    
+
     where sun has set and moon > 10 degrees above horizon after sun set"""
     moon_minimum = ephem.degrees('09:00:00')
     _home_date = home.date
@@ -800,7 +800,7 @@ def getCrescentMoon(home, date):
     s.compute(home)
     m.compute(home)
     # This loop used to test for sunset before moonset, but since the calc date is set to sunset each
-    # iteration, it is enough to test simply for moon alt > 9 at sunset, since if moonset was before sunset, 
+    # iteration, it is enough to test simply for moon alt > 9 at sunset, since if moonset was before sunset,
     # the altitude would be negative.
     i = 0                                                           # loop counter to avoid ridiculous number of attempts
     while m.alt < moon_minimum:                                     # trap for the unwary: native angles are in radians and only display as angles.
@@ -851,7 +851,7 @@ def renderHTMLIntro():
         <li>Two <i>Submit</i> buttons, one top and one bottom, for when you are just changing the date and don't want to scroll down to the bottom button.</li>
     </ul>
     <h3>Usage</h3>
-    <ul> 
+    <ul>
         <li>Select the time and date, or choose Now.  Initially, it is set to current time in UTC.</li>
         <li>Select UTC or local time and your timezone.</li>
         <li>Select your location:</li>
