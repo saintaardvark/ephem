@@ -86,3 +86,31 @@
      that should match.
 * TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
 * TODO Best of NGC
+* TODO Only if so high above horizon
+* TODO Include stars in chart
+* TODO Include type of object in chart (gal, oc, etc)
+  - See http://www.mmto.org/obscats/edb.html
+  - If Field 2 is f the object is fixed and the following fields and
+    subfields are defined:
+	A Cluster of galaxies
+	B Star, binary. Deprecated as of version 3.6, gets turned into D internally. Use Field 2 type B if more than one position angle and separation or orbital elements are known.
+	C Cluster, globular
+	D Star, visual double
+	F Nebula, diffuse
+	G Galaxy, spiral
+	H Galaxy, spherical
+	J Radio
+	K Nebula, dark
+	L Pulsar
+	M Star, multiple
+	N Nebula, bright
+	O Cluster, open
+	P Nebula, planetary
+	Q Quasar
+	R Supernova remnant
+	S Star
+	T Stellar object
+	U Cluster, with nebulosity
+	Y Supernova
+	V Star, variable
+  - In PyEphem, body._class gives the one-letter code
