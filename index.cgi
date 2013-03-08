@@ -1,4 +1,4 @@
-#!/home/aardvark/.pythonbrew/pythons/Python-2.7.2/bin/python
+#!/home/hugh/.pythonbrew/pythons/Python-2.7.2/bin/python
 #coding=utf-8
 #!/usr/bin/env python -Wignore::DeprecationWarning
 #!/usr/bin/python -Wignore::DeprecationWarning
@@ -66,10 +66,11 @@ params = {
     'altaz' : True,
     'above_horiz' : False,
     'minmag' : None,
+    'rasc_finest' : False,
     'timetable' : False
 }
 
-booleans = ('processed', 'now', 'utc', 'save', 'altaz', 'above_horiz', 'timetable')
+booleans = ('processed', 'now', 'utc', 'save', 'altaz', 'above_horiz', 'rasc_finest', 'timetable')
 debug = []                      # a handy set for anything, useful to store values to print out later
 
 def main():
@@ -364,6 +365,9 @@ def main():
             print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
             print print_fmt % (n.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(n.az), ephem.constellation(n)[1][:6], float(n.mag), risetime, settime, roundAngle(n.transit_alt))
         print '</table>'
+        if params['rasc_finest'] == True:
+            print '<p>You asked for the RASC finest list? <b>%s</b></p>' % (params['rasc_finest'])
+            ngc = rasc_finest
         if params['timetable'] == True:
             print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
             print_timetable(params, home, messiers)
@@ -416,6 +420,11 @@ def roundAngle(angle):
     # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
     return str(angle).split(":")[0]
 
+def floatAngle(angle):
+    """ return the float degrees part of the string representation of an angle"""
+    # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
+#    return str(angle).split(":")[0] + str(angle).split(":")[2] / 60
+    return (int(str(angle).split(":")[0]) + float(int(str(angle).split(":")[1])) / 60)
 
 def azDirection(az):
     """ return the direction (North, South, North-East etc, shown as N, S, NE) for an azimuth"""
@@ -577,6 +586,7 @@ def renderForm():
     #city_list = ephem.cities._city_data.keys()     # this doesn't work, cities not found?
     #city_list.sort()
     messier_list = ( 'M1 Crab Nebula', 'M2', 'M3', 'M4', 'M5', 'M6 Butterfly Cluster', 'M7 Ptolemy\'s Cluster', 'M8 Lagoon Nebula', 'M9', 'M10', 'M11 Wild Duck Cluster', 'M12', 'M13 Hercules Cluster', 'M14', 'M15', 'M16 Eagle Nebula, Star Queen Nebula', 'M17 Omega Nebula, Swan Nebula, Lobster Nebula', 'M18', 'M19', 'M20 Trifid Nebula', 'M21', 'M22', 'M23', 'M24 Delle Caustiche', 'M25', 'M26', 'M27 Dumbbell Nebula', 'M28', 'M29', 'M30', 'M31 Andromeda Galaxy', 'M32', 'M33 Triangulum Galaxy', 'M34', 'M35', 'M36', 'M37', 'M38', 'M39', 'M40 Double Star WNC4', 'M41', 'M42 Orion Nebula', 'M43 de Mairan\'s nebula; part of Orion Nebula', 'M44 Praesepe, Beehive Cluster', 'M45 Subaru, Pleiades, Seven Sisters', 'M46', 'M47', 'M48', 'M49', 'M50', 'M51 Whirlpool Galaxy', 'M52', 'M53', 'M54', 'M55', 'M56', 'M57 Ring Nebula', 'M58', 'M59', 'M60', 'M61', 'M62', 'M63 Sunflower Galaxy', 'M64 Blackeye Galaxy', 'M65', 'M66', 'M67', 'M68', 'M69', 'M70', 'M71', 'M72', 'M73', 'M74', 'M75', 'M76 Little Dumbbell Nebula, Cork Nebula', 'M77', 'M78', 'M79', 'M80', 'M81 Bode\'s Galaxy', 'M82 Cigar Galaxy', 'M83 Southern Pinwheel Galaxy', 'M84', 'M85', 'M86', 'M87 Virgo A', 'M88', 'M89', 'M90', 'M91', 'M92', 'M93', 'M94', 'M95', 'M96', 'M97 Owl Nebula', 'M98', 'M99', 'M100', 'M101 Pinwheel Galaxy', 'M102 Spindle Galaxy', 'M103', 'M104 Sombrero Galaxy', 'M105', 'M106', 'M107', 'M108', 'M109', 'M110')
+    rasc_finest = ( 'NGC 40','NGC 185','NGC 246','NGC 253','NGC 281','NGC 289','NGC 457','NGC 663','NGC 772','NGC 869','NGC 891','NGC 936','NGC 1023','NGC 1232','NGC 1491','NGC 1501','NGC 1514','NGC 1535','NGC 1788','NGC 1931','NGC 1973','NGC 2022','NGC 2024','NGC 2194','NGC 2237','NGC 2261','NGC 2359','NGC 2371','NGC 2392','NGC 2403','NGC 2440','NGC 2539','NGC 2655','NGC 2683','NGC 2841','NGC 2903','NGC 3003','NGC 3079','NGC 3115','NGC 3184','NGC 3242','NGC 3344','NGC 3384','NGC 3432','NGC 3521','NGC 3607','NGC 3627','NGC 3877','NGC 3941','NGC 4026','NGC 4038','NGC 4088','NGC 4111','NGC 4157','NGC 4214','NGC 4216','NGC 4244','NGC 4274','NGC 4361','NGC 4388','NGC 4414','NGC 4438','NGC 4449','NGC 4490','NGC 4494','NGC 4517','NGC 4526','NGC 4535','NGC 4559','NGC 4565','NGC 4567','NGC 4605','NGC 4631','NGC 4656','NGC 4699','NGC 4725','NGC 4762','NGC 5005','NGC 5033','NGC 5466','NGC 5746','NGC 5866','NGC 6210','NGC 6369','NGC 6445','NGC 6503','NGC 6520','NGC 6543','NGC 6572','NGC 6633','NGC 6712','NGC 6781','NGC 6802','NGC 6818','NGC 6819','NGC 6826','NGC 6888','NGC 6939','NGC 6940','NGC 6946','NGC 6960','NGC 6992','NGC 7000','NGC 7009','NGC 7027','NGC 7129','NGC 7293','NGC 7331','NGC 7635','NGC 7662','NGC 7789')
     ngc_list = [ ]
     for i in range(1,7841):
         ngc_list.append("NGC %d" % i)
@@ -697,7 +707,7 @@ def renderForm():
     params['ngc'] += ''
     for n in ngc_list:
         for mm in params['ngc']:
-            if m == mm:
+            if n == mm:
                 form['ngcselect'] = selected
                 break
         else:
@@ -784,10 +794,11 @@ def renderForm():
      <br />&nbsp;&nbsp;RA/Dec<input type="radio" name="altaz" value="False" %s />
      <br />Only objects above horizon?<input type="checkbox" name="above_horiz" value="True" %s />
      <br />Only brighter than<input type="text" value="%s" name="minmag" size="3" />magnitude (lower is brighter)
+     <br />Show the RASC Finest NGC list?<input type="checkbox" name="rasc_finest" value="True" %s />
      <br />Three hour timetable?<input type="checkbox" name="timetable" value="True" %s />
     </fieldset>
     <fieldset><legend><b>Go</b></legend>
-    <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',) + (params['timetable'] and 'checked="checked"' or '',))
+    <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',) + (params['rasc_finest'] and 'checked="checked"' or '',) + (params['timetable'] and 'checked="checked"' or '',))
     if params['save'] or not params['processed']:
         checked = 'checked="checked"'
     else:
@@ -1035,9 +1046,9 @@ def print_timetable(param, home, list):
   <td class=\"tdleft\">%s</td>
   <td class=\"tdleft\">%3s</td>
   <td>%.0f</td>
-  <td>%3s</td><td>%3s</td>
+  <td>%.1f</td><td>%.1f</td>
         """
-        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), roundAngle(j.alt), roundAngle(j.az))
+        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), floatAngle(j.alt), floatAngle(j.az))
         for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
@@ -1050,11 +1061,12 @@ def print_timetable(param, home, list):
                 print "<td class=\"%s\"> - </td>" % c
                 continue
             print_fmt = """
-  <td class="%s">%3s</td><td class="%s">%3s</td>
+  <td class="%s">%.1f</td><td class="%s">%.1f</td>
 """
-            print print_fmt % (c, roundAngle(j.alt), c, roundAngle(j.az))
+            print print_fmt % (c, floatAngle(j.alt), c, floatAngle(j.az))
         print "</tr>"
     print '</table>'
+    home.date = orig_time
 
 
 if __name__ == '__main__':

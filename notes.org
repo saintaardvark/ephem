@@ -1,6 +1,6 @@
 * TODO Break out config to separate file or *something*.
-* TODO Localtime not actually showing up as local time; displayed as UTC
-  - Test case #1: 
+* TODO Localtime works if you select UTC; if you select localtime, adds 8 hours and goes from there.
+** Test case #1 (now working)
     - click now
     - select UTC
     - Submit
@@ -10,7 +10,7 @@
       - The UTC is correct; the local time is not.  This is going by
         pos in Stellarium; the pos is correct for now/00:43 UTC, it's
         just the local time that needs to be corrected.
-  - So:  
+  - So:
     - Localtime is datetime(*getLocalDateTime(home.date.tuple())[:6]).strftime("%F %R")
     - UTC is:				      home.date.datetime().strftime("%F %R")
   - So what's wrong with getLocalDateTIme?
@@ -20,7 +20,7 @@
         seems to work: for Test Case #1 described above, time displayed
         is local; UTC is sane; positions make sense.
   - But now another problem.
-  - Test Case #2:
+** Test Case #2 (where the bug is now)
     - Click now
     - select Local, ensure Canada/Pacific checked
     - Submit
@@ -30,7 +30,7 @@
       - Line 842: astimezone() cannot be applied to a naive datetime
         return utc.localize(datetime(*date).astimezone(tz)).timetuple()
       - That's in getLocaldateTime too...
-  - Not sure what that means.  Tried adding: 
+  - Not sure what that means.  Tried adding:
     ,----
     |except ValueError:
     |    return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
@@ -42,13 +42,19 @@
       - 2013-02-19 01:15 Local
       - 2013-02-19 09:15 UTC
       - ..which is just very, very bogus.
-  - Bug: ngc getting set to 3 hr ahead when 3 hr chart sel!
+    - But the positions for the time apear to be correct -- judging by
+      the moon, anyhow.
+      - So it looks like it's just guessing the wrong time: adding 8
+        hours to get local time, then adding 8 hours to *that* to get
+        UTC.  Positions are correct, just wrong guess.
+      - Leaving this for now.
 
 * DONE Figure out how to do the timetable part: add 15 minutes at a time
   CLOSED: [2013-02-15 Fri 18:01]
 
 * TODO Better column/row display (CSS, alt colours, etc)
-* TODO NGC objects!
+* DONE NGC objects!
+  CLOSED: [2013-02-19 Tue 07:54]
 ** http://www.ngcicproject.org/public_HCNGC/HCNGC.htm
    - wget http://www.ngcicproject.org/public_HCNGC/Public_HCNGC.txt
    - Delimited! http://www.ngcicproject.org/public_HCNGC/DPublic_HCNGC.txt
@@ -79,4 +85,4 @@
    - for some reason, the getNGCEdb function is not returning the line
      that should match.
 * TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
-*
+* TODO Best of NGC
