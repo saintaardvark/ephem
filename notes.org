@@ -84,11 +84,12 @@
 ** Only NGC 1 being displayed
    - for some reason, the getNGCEdb function is not returning the line
      that should match.
-* TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
+* DONE Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
+  CLOSED: [2013-03-11 Mon 13:40]
 * TODO Best of NGC
 * TODO Only if so high above horizon
 * TODO Include stars in chart
-* TODO Include type of object in chart (gal, oc, etc)
+* TODO Include type of object in chart (gal, oc, etc) [50%]
   - See http://www.mmto.org/obscats/edb.html
   - If Field 2 is f the object is fixed and the following fields and
     subfields are defined:
@@ -114,3 +115,5 @@
 	Y Supernova
 	V Star, variable
   - In PyEphem, body._class gives the one-letter code
+  - [X] Display type
+  - [ ] now need a legend or possibly expansion.
