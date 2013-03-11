@@ -1010,6 +1010,7 @@ def print_timetable(param, home, list):
 <table class="sortable" id="results_messiers" >
   <tr>
     <th rowspan="2">Object</th>
+    <th rowspan="2">Type</th>
     <th rowspan="2">Const</th>
     <th rowspan="2">Mag</th>
     <th colspan="2">Now</th>
@@ -1044,11 +1045,12 @@ def print_timetable(param, home, list):
         print_fmt = """
 <tr>
   <td class=\"tdleft\">%s</td>
+  <td class=\"tdleft\">%2s</td>
   <td class=\"tdleft\">%3s</td>
   <td>%.0f</td>
   <td>%.1f</td><td>%.1f</td>
         """
-        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), floatAngle(j.alt), floatAngle(j.az))
+        print print_fmt % (j.name, j._class, ephem.constellation(j)[1][:6], float(j.mag), floatAngle(j.alt), floatAngle(j.az))
         for i in range(1,13):
             if (divmod(i,2)[1] == 1):
                 c = "odd"
