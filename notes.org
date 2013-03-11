@@ -117,3 +117,5 @@
   - In PyEphem, body._class gives the one-letter code
   - [X] Display type
   - [ ] now need a legend or possibly expansion.
+
+* TODO Output to either spreadsheet, or format suitable for conversion to PDF
