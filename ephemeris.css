@@ -74,6 +74,13 @@ div#output {
 	padding: 1em;
 }
 
+.odd {
+    background: #f7f7f7;
+}
+
+.even {
+    background: #c1c1c1;
+}
 th {
     background: #f7f7f7;
     font-weight: normal;
@@ -109,5 +116,3 @@ table.seasons {
 #output th.seasons {
     background: #eef;
 }
-
-

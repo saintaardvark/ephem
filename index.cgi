@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/home/aardvark/.pythonbrew/pythons/Python-2.7.2/bin/python
 #coding=utf-8
 #!/usr/bin/env python -Wignore::DeprecationWarning
 #!/usr/bin/python -Wignore::DeprecationWarning
@@ -16,6 +16,7 @@ import warnings
 
 #   config variables
 messierdb = 'Messier.edb'
+ngcdb = 'NGC.edb'
 tlefile = 'visual.txt'
 tleurl = 'www.celestrak.com/NORAD/elements/'
 # end config
@@ -51,6 +52,7 @@ params = {
     'pressure' : None,
     'star' : [],
     'messier' : [],
+    'ngc' : [],
     'body' : None,
     'sun' : None,
     'moon' : None,
@@ -63,10 +65,12 @@ params = {
     'neptune': None,
     'altaz' : True,
     'above_horiz' : False,
-    'minmag' : None
+    'minmag' : None,
+    'rasc_finest' : False,
+    'timetable' : False
 }
 
-booleans = ('processed', 'now', 'utc', 'save', 'altaz', 'above_horiz')
+booleans = ('processed', 'now', 'utc', 'save', 'altaz', 'above_horiz', 'rasc_finest', 'timetable')
 debug = []                      # a handy set for anything, useful to store values to print out later
 
 def main():
@@ -108,6 +112,7 @@ def main():
             params[key] = form.getvalue(key)
         params['star'] = form.getlist('star')                 # except that star is a special case
         params['messier'] = form.getlist('messier')                 # except that messier is a special case
+        params['ngc'] = form.getlist('ngc')
         if form.has_key('clear'):
             setCookies(clear=True)
 
@@ -308,6 +313,7 @@ def main():
 
         print '<table class="sortable" id="results_messiers" ><tr><th>Messier</th><th>%s</th><th>%s</th><th>Dir</th><th>Const</th><th>Mag</th><th>Rise</th><th>Set</th><th>TransAlt</th></tr>' % altaz
         messiers = []
+        ngc = []
         for m in params['messier']:
             messiers.append(ephem.readdb(getMessierEdb(m.split()[0])))
         for m in messiers:
@@ -333,7 +339,39 @@ def main():
             print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
             print print_fmt % (m.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(m.az), ephem.constellation(m)[1][:6], float(m.mag), risetime, settime, roundAngle(m.transit_alt))
         print '</table>'
-            
+        print '<table class="sortable" id="results_ngc" ><tr><th>NGC</th><th>%s</th><th>%s</th><th>Dir</th><th>Const</th><th>Mag</th><th>Rise</th><th>Set</th><th>TransAlt</th></tr>' % altaz
+        for n in params['ngc']:
+            ngc.append(ephem.readdb(getNGCEdb(n)))
+        for n in ngc:
+            n.compute(home)
+            if params['above_horiz'] and n.alt < 0:                                   # only bother if star is above the horizon
+                continue
+            if params['minmag'] and n.mag > params['minmag']:
+                continue
+            rtime,stime = getNextRiseSet(n, home)
+            if rtime[0] == -1 or stime[0] == -1:
+                # don't want to do any formatting
+                risetime = -1
+                settime = -1
+            else:
+                if not params['utc']:
+                    rtime = getLocalDateTime(rtime)
+                    stime = getLocalDateTime(stime)
+                risetime = '%02.0f:%02.0f' % (rtime[3], rtime[4])
+                settime = '%02.0f:%02.0f' % (stime[3], stime[4])
+            n.compute(home)
+            #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (n.name, roundAngle(n.az), roundAngle(n.alt), n.mag)
+            altazradec = params['altaz'] and (n.alt, n.az) or (n.ra, n.dec)
+            print_fmt = '<tr><td class=\"tdleft\">%s</td><td>%s</td><td>%3s</td><td>%3s</td><td class=\"tdleft\">&nbsp; %3s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+            print print_fmt % (n.name, roundAngle(altazradec[0]), roundAngle(altazradec[1]), azDirection(n.az), ephem.constellation(n)[1][:6], float(n.mag), risetime, settime, roundAngle(n.transit_alt))
+        print '</table>'
+        if params['rasc_finest'] == True:
+            print '<p>You asked for the RASC finest list? <b>%s</b></p>' % (params['rasc_finest'])
+            ngc = rasc_finest
+        if params['timetable'] == True:
+            print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
+            print_timetable(params, home, messiers)
+            print_timetable(params, home, ngc)
         tock = datetime.now()
         print "<p><small>Done in %s.</small></p>" % ( tock - tick)
     print """</div><!-- output -->
@@ -382,6 +420,11 @@ def roundAngle(angle):
     # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
     return str(angle).split(":")[0]
 
+def floatAngle(angle):
+    """ return the float degrees part of the string representation of an angle"""
+    # an alternative is some sort of variant of str(angle)[:2].  The problem is that the first few digits is variable, so splitting on ":" is better for all cases.
+#    return str(angle).split(":")[0] + str(angle).split(":")[2] / 60
+    return (int(str(angle).split(":")[0]) + float(int(str(angle).split(":")[1])) / 60)
 
 def azDirection(az):
     """ return the direction (North, South, North-East etc, shown as N, S, NE) for an azimuth"""
@@ -398,9 +441,9 @@ def renderHTMLHead():
             <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
             <meta name="keywords" content="ephemeris, online, online epheris, xephem, python, pyephem" />
             <meta name="description" content="web based online ephemeris written in Python using the pyephem module" />
-            <link rel="stylesheet" href="ephemeris.css" type="text/css" />
+            <link rel="stylesheet" href="/ephem/ephemeris.css" type="text/css" />
             <link rel="shortcut icon" href="favicon.ico" />
-            <script type="text/javascript" src="js/sortable.js"></script>
+            <script type="text/javascript" src="/ephem/js/sortable.js"></script>
             <title>Online Ephemeris</title>
         </head>
         <body><div id="content">Back to <a name="top"></a><a href="/">Home</a><h1>Ephemeris</h1><p><a href="#intro"><h3>Features &amp; Help</h3></a></p>"""
@@ -433,9 +476,9 @@ def renderHTMLFooter():
             document.write( escape( document.referrer ) );
             document.write('" height="1" width="1" style="display:none" alt="" />');
         // -->
-        </script><noscript> 
-            <img src="/axs/ax.pl?mode=img" height="1" width="1" style="display:none" alt="" /> 
-        </noscript> 
+        </script><noscript>
+            <img src="/axs/ax.pl?mode=img" height="1" width="1" style="display:none" alt="" />
+        </noscript>
         </body></html>"""
 
 
@@ -543,6 +586,10 @@ def renderForm():
     #city_list = ephem.cities._city_data.keys()     # this doesn't work, cities not found?
     #city_list.sort()
     messier_list = ( 'M1 Crab Nebula', 'M2', 'M3', 'M4', 'M5', 'M6 Butterfly Cluster', 'M7 Ptolemy\'s Cluster', 'M8 Lagoon Nebula', 'M9', 'M10', 'M11 Wild Duck Cluster', 'M12', 'M13 Hercules Cluster', 'M14', 'M15', 'M16 Eagle Nebula, Star Queen Nebula', 'M17 Omega Nebula, Swan Nebula, Lobster Nebula', 'M18', 'M19', 'M20 Trifid Nebula', 'M21', 'M22', 'M23', 'M24 Delle Caustiche', 'M25', 'M26', 'M27 Dumbbell Nebula', 'M28', 'M29', 'M30', 'M31 Andromeda Galaxy', 'M32', 'M33 Triangulum Galaxy', 'M34', 'M35', 'M36', 'M37', 'M38', 'M39', 'M40 Double Star WNC4', 'M41', 'M42 Orion Nebula', 'M43 de Mairan\'s nebula; part of Orion Nebula', 'M44 Praesepe, Beehive Cluster', 'M45 Subaru, Pleiades, Seven Sisters', 'M46', 'M47', 'M48', 'M49', 'M50', 'M51 Whirlpool Galaxy', 'M52', 'M53', 'M54', 'M55', 'M56', 'M57 Ring Nebula', 'M58', 'M59', 'M60', 'M61', 'M62', 'M63 Sunflower Galaxy', 'M64 Blackeye Galaxy', 'M65', 'M66', 'M67', 'M68', 'M69', 'M70', 'M71', 'M72', 'M73', 'M74', 'M75', 'M76 Little Dumbbell Nebula, Cork Nebula', 'M77', 'M78', 'M79', 'M80', 'M81 Bode\'s Galaxy', 'M82 Cigar Galaxy', 'M83 Southern Pinwheel Galaxy', 'M84', 'M85', 'M86', 'M87 Virgo A', 'M88', 'M89', 'M90', 'M91', 'M92', 'M93', 'M94', 'M95', 'M96', 'M97 Owl Nebula', 'M98', 'M99', 'M100', 'M101 Pinwheel Galaxy', 'M102 Spindle Galaxy', 'M103', 'M104 Sombrero Galaxy', 'M105', 'M106', 'M107', 'M108', 'M109', 'M110')
+    rasc_finest = ( 'NGC 40','NGC 185','NGC 246','NGC 253','NGC 281','NGC 289','NGC 457','NGC 663','NGC 772','NGC 869','NGC 891','NGC 936','NGC 1023','NGC 1232','NGC 1491','NGC 1501','NGC 1514','NGC 1535','NGC 1788','NGC 1931','NGC 1973','NGC 2022','NGC 2024','NGC 2194','NGC 2237','NGC 2261','NGC 2359','NGC 2371','NGC 2392','NGC 2403','NGC 2440','NGC 2539','NGC 2655','NGC 2683','NGC 2841','NGC 2903','NGC 3003','NGC 3079','NGC 3115','NGC 3184','NGC 3242','NGC 3344','NGC 3384','NGC 3432','NGC 3521','NGC 3607','NGC 3627','NGC 3877','NGC 3941','NGC 4026','NGC 4038','NGC 4088','NGC 4111','NGC 4157','NGC 4214','NGC 4216','NGC 4244','NGC 4274','NGC 4361','NGC 4388','NGC 4414','NGC 4438','NGC 4449','NGC 4490','NGC 4494','NGC 4517','NGC 4526','NGC 4535','NGC 4559','NGC 4565','NGC 4567','NGC 4605','NGC 4631','NGC 4656','NGC 4699','NGC 4725','NGC 4762','NGC 5005','NGC 5033','NGC 5466','NGC 5746','NGC 5866','NGC 6210','NGC 6369','NGC 6445','NGC 6503','NGC 6520','NGC 6543','NGC 6572','NGC 6633','NGC 6712','NGC 6781','NGC 6802','NGC 6818','NGC 6819','NGC 6826','NGC 6888','NGC 6939','NGC 6940','NGC 6946','NGC 6960','NGC 6992','NGC 7000','NGC 7009','NGC 7027','NGC 7129','NGC 7293','NGC 7331','NGC 7635','NGC 7662','NGC 7789')
+    ngc_list = [ ]
+    for i in range(1,7841):
+        ngc_list.append("NGC %d" % i)
     form = {}
     checked = 'checked="checked"'                       # used often enough to treat it as a quasi constant
     selected = 'selected="selected"'
@@ -657,6 +704,17 @@ def renderForm():
         append('<option value="%s" %s>%s</option>' % (m, form['messierselect'], m))
     messiers = "".join(list_)
 
+    params['ngc'] += ''
+    for n in ngc_list:
+        for mm in params['ngc']:
+            if n == mm:
+                form['ngcselect'] = selected
+                break
+        else:
+            form['ngcselect'] = ''
+        append('<option value="%s" %s>%s</option>' % (m, form['ngcselect'], m))
+    ngcs = "".join(list_)
+
     if params['altaz']:
         form['altazchecked'] = (checked,'')
     else:
@@ -725,6 +783,10 @@ def renderForm():
     print stars
     print '</select> <select name="messier" multiple="multiple" size="15" >'
     print messiers
+    print '</select> <select name="ngc" multiple="multiple" size="15">'
+    for i in range (1,7841):
+        # FIXME: Hack
+        print """ <option value="NGC %d">NGC %d</option> """ % (i, i)
     print """
     </select></fieldset></fieldset>
     <fieldset><legend>Results</legend>
@@ -732,9 +794,11 @@ def renderForm():
      <br />&nbsp;&nbsp;RA/Dec<input type="radio" name="altaz" value="False" %s />
      <br />Only objects above horizon?<input type="checkbox" name="above_horiz" value="True" %s />
      <br />Only brighter than<input type="text" value="%s" name="minmag" size="3" />magnitude (lower is brighter)
+     <br />Show the RASC Finest NGC list?<input type="checkbox" name="rasc_finest" value="True" %s />
+     <br />Three hour timetable?<input type="checkbox" name="timetable" value="True" %s />
     </fieldset>
     <fieldset><legend><b>Go</b></legend>
-    <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',))
+    <input type="hidden" name="processed" value="True" />""" % ( form['altazchecked'] + (params['above_horiz'] and 'checked="checked"' or '',) + (params['minmag'] < 99 and params['minmag'] or '',) + (params['rasc_finest'] and 'checked="checked"' or '',) + (params['timetable'] and 'checked="checked"' or '',))
     if params['save'] or not params['processed']:
         checked = 'checked="checked"'
     else:
@@ -751,7 +815,11 @@ def setUTCDate():
         params['utc_date'] = (params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
     else:
         # from http://stackoverflow.com/questions/1357711/pytz-utc-conversion
-        d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
+        try:
+            d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'], params['second'])
+        except TypeError:
+            # FIXME: Awful hack
+            d = datetime(params['year'], params['month'], params['day'], params['hour'], params['minute'])
         tz = pytz.timezone(params['tzname'])
         _date = tz.normalize(tz.localize(d).astimezone(pytz.utc))
         params['utc_date'] = _date.utctimetuple()[:6]
@@ -769,8 +837,10 @@ def getLocalDateTime(date):
 #    temp2= temp.astimezone(tz)
 #    temp3 = utc.normalize(temp2)
 #    return temp3.timetuple()
-    return utc.normalize(utc.localize(datetime(*date)).astimezone(tz)).timetuple()
-
+    try:
+        return utc.normalize(utc.localize(datetime(*date)).astimezone(tz)).timetuple()
+    except TypeError:
+        return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
 
 def getMessierEdb(m):
     # Returns a string giving a Messier edb, or None if not found.
@@ -778,6 +848,20 @@ def getMessierEdb(m):
     edb = None
     try:
         with open(messierdb) as f:
+            for line in f:
+                if line.startswith(m):
+                    edb = line
+                    break
+    except:
+        pass
+    return edb
+
+def getNGCEdb(m):
+    # Returns a string giving a NGC edb, or None if not found.
+    # Note use of with...as syntax obviates need for f.close(): happens automatically when 'with' block exits.
+    edb = None
+    try:
+        with open(ngcdb) as f:
             for line in f:
                 if line.startswith(m):
                     edb = line
@@ -919,6 +1003,70 @@ def renderHTMLIntro():
     <a href="#top">Top of page</a>
     </div><!-- intro -->
     """
+
+def print_timetable(param, home, list):
+    orig_time = home.date
+    print """
+<table class="sortable" id="results_messiers" >
+  <tr>
+    <th rowspan="2">Object</th>
+    <th rowspan="2">Const</th>
+    <th rowspan="2">Mag</th>
+    <th colspan="2">Now</th>
+"""
+    # 1/4 hr * 3 hrs = 12
+    for i in range(1,13):
+        home.date += (15 * ephem.minute)
+        print """
+    <th colspan="2">%s</th>
+""" % (datetime(*getLocalDateTime(home.date.tuple())[:6]).strftime("%R"))
+    print """
+  </tr>
+  <tr>
+    <th>Alt</th><th>Az</th>
+"""
+    for i in range(1,13):
+        print """
+    <th>Alt</th><th>Az</th>
+"""
+    print """
+  </tr>
+    """
+    for j in list:
+        home.date = orig_time
+        j.compute(home)
+        if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
+            continue
+        if params['minmag'] and j.mag > params['minmag']:
+            continue
+        j.compute(home)
+        #print '<p>%s, az %s, alt %s, mag %2.0f</p>' % (m.name, roundAngle(m.az), roundAngle(m.alt), m.mag)
+        print_fmt = """
+<tr>
+  <td class=\"tdleft\">%s</td>
+  <td class=\"tdleft\">%3s</td>
+  <td>%.0f</td>
+  <td>%.1f</td><td>%.1f</td>
+        """
+        print print_fmt % (j.name, ephem.constellation(j)[1][:6], float(j.mag), floatAngle(j.alt), floatAngle(j.az))
+        for i in range(1,13):
+            if (divmod(i,2)[1] == 1):
+                c = "odd"
+            else:
+                c = "even"
+            home.date += 15 * ephem.minute
+            j.compute(home)
+            if params['above_horiz'] and j.alt < 0:                                   # only bother if star is above the horizon
+                print "<td class=\"%s\"> - </td>" % c
+                print "<td class=\"%s\"> - </td>" % c
+                continue
+            print_fmt = """
+  <td class="%s">%.1f</td><td class="%s">%.1f</td>
+"""
+            print print_fmt % (c, floatAngle(j.alt), c, floatAngle(j.az))
+        print "</tr>"
+    print '</table>'
+    home.date = orig_time
 
 
 if __name__ == '__main__':

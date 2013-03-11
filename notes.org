@@ -1,0 +1,116 @@
+* TODO Break out config to separate file or *something*.
+* TODO Localtime works if you select UTC; if you select localtime, adds 8 hours and goes from there.
+** Test case #1 (now working)
+    - click now
+    - select UTC
+    - Submit
+    - Says:
+      - For time: 2013-02-19 00:43 Local
+      - 2013-02-19 00:43 UTC
+      - The UTC is correct; the local time is not.  This is going by
+        pos in Stellarium; the pos is correct for now/00:43 UTC, it's
+        just the local time that needs to be corrected.
+  - So:
+    - Localtime is datetime(*getLocalDateTime(home.date.tuple())[:6]).strftime("%F %R")
+    - UTC is:				      home.date.datetime().strftime("%F %R")
+  - So what's wrong with getLocalDateTIme?
+    - tz is getting set correctly.
+    - Aha -- pytz.utc.normalize?
+      - Yes: that appears to set the time to utc.  If I unset that,
+        seems to work: for Test Case #1 described above, time displayed
+        is local; UTC is sane; positions make sense.
+  - But now another problem.
+** Test Case #2 (where the bug is now)
+    - Click now
+    - select Local, ensure Canada/Pacific checked
+    - Submit
+    - Error
+      - Line 842: astimezone() cannot be applied to a naive datetime
+      - That line:
+      - Line 842: astimezone() cannot be applied to a naive datetime
+        return utc.localize(datetime(*date).astimezone(tz)).timetuple()
+      - That's in getLocaldateTime too...
+  - Not sure what that means.  Tried adding:
+    ,----
+    |except ValueError:
+    |    return utc.normalize(utc.localize(datetime(*date[:5])).astimezone(tz)).timetuple()
+    `----
+  - but no good; another error...wait, no: wrong times.  I was sure I
+    got an error before...
+    - Wrong times:  click now, Local timezone.
+    - For time:
+      - 2013-02-19 01:15 Local
+      - 2013-02-19 09:15 UTC
+      - ..which is just very, very bogus.
+    - But the positions for the time apear to be correct -- judging by
+      the moon, anyhow.
+      - So it looks like it's just guessing the wrong time: adding 8
+        hours to get local time, then adding 8 hours to *that* to get
+        UTC.  Positions are correct, just wrong guess.
+      - Leaving this for now.
+
+* DONE Figure out how to do the timetable part: add 15 minutes at a time
+  CLOSED: [2013-02-15 Fri 18:01]
+
+* TODO Better column/row display (CSS, alt colours, etc)
+* DONE NGC objects!
+  CLOSED: [2013-02-19 Tue 07:54]
+** http://www.ngcicproject.org/public_HCNGC/HCNGC.htm
+   - wget http://www.ngcicproject.org/public_HCNGC/Public_HCNGC.txt
+   - Delimited! http://www.ngcicproject.org/public_HCNGC/DPublic_HCNGC.txt
+     - head -20 DPublic_HCNGC.org | awk -F"|" '{print $2, $9, $7, $8, $19, $17, $15, $16}'
+     - Columns:
+       - NGC (1)
+       - RA (6)
+       - Dec (7)
+       - Const (8)
+       - Desc (9)
+       - Obj Type (14)
+       - Obj Class (15)
+       - Size (16)
+       - VMag (17)
+       - Also catalogued as (21)
+
+** Alternatively: data from stellarium
+
+** Best of NGC
+   - http://messier.seds.org/xtra/similar/sac110bn.html
+   - http://messier.seds.org/xtra/similar/rasc-ngc.html
+** ARGHH!  There's already one in ephem format
+   - and there's an ephem format!
+   - http://rhodesmill.org/pyephem/catalogs
+   - http://www.maa.mhn.de/Tools/Xephem/
+
+** Only NGC 1 being displayed
+   - for some reason, the getNGCEdb function is not returning the line
+     that should match.
+* TODO Maybe make times mod 15 (5.55, 6pm, 6.15pm...)
+* TODO Best of NGC
+* TODO Only if so high above horizon
+* TODO Include stars in chart
+* TODO Include type of object in chart (gal, oc, etc)
+  - See http://www.mmto.org/obscats/edb.html
+  - If Field 2 is f the object is fixed and the following fields and
+    subfields are defined:
+	A Cluster of galaxies
+	B Star, binary. Deprecated as of version 3.6, gets turned into D internally. Use Field 2 type B if more than one position angle and separation or orbital elements are known.
+	C Cluster, globular
+	D Star, visual double
+	F Nebula, diffuse
+	G Galaxy, spiral
+	H Galaxy, spherical
+	J Radio
+	K Nebula, dark
+	L Pulsar
+	M Star, multiple
+	N Nebula, bright
+	O Cluster, open
+	P Nebula, planetary
+	Q Quasar
+	R Supernova remnant
+	S Star
+	T Stellar object
+	U Cluster, with nebulosity
+	Y Supernova
+	V Star, variable
+  - In PyEphem, body._class gives the one-letter code
