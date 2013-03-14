@@ -119,3 +119,5 @@
   - [ ] now need a legend or possibly expansion.
 
 * TODO Output to either spreadsheet, or format suitable for conversion to PDF
+* TODO License
+  https://github.com/ncoleman/ephem/issues/1#issuecomment-14557645
