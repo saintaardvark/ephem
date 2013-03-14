@@ -19,6 +19,9 @@ messierdb = 'Messier.edb'
 ngcdb = 'NGC.edb'
 tlefile = 'visual.txt'
 tleurl = 'www.celestrak.com/NORAD/elements/'
+
+# This needs to be set
+ephem_url = "http://saintaardvarkthecarpeted.com/ephem"
 # end config
 
 # params notes:
@@ -434,20 +437,20 @@ def azDirection(az):
 
 def renderHTMLHead():
     #print """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    print """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    header =  """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         <head>
             <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
             <meta name="keywords" content="ephemeris, online, online epheris, xephem, python, pyephem" />
             <meta name="description" content="web based online ephemeris written in Python using the pyephem module" />
-            <link rel="stylesheet" href="/ephem/ephemeris.css" type="text/css" />
+            <link rel="stylesheet" href="%s/ephemeris.css" type="text/css" />
             <link rel="shortcut icon" href="favicon.ico" />
-            <script type="text/javascript" src="/ephem/js/sortable.js"></script>
+            <script type="text/javascript" srcs="%s/js/sortable.js"></script>
             <title>Online Ephemeris</title>
         </head>
         <body><div id="content">Back to <a name="top"></a><a href="/">Home</a><h1>Ephemeris</h1><p><a href="#intro"><h3>Features &amp; Help</h3></a></p>"""
-
+    print header % (ephem_url, ephem_url)
 
 def renderHTMLFooter():
     print """</div><!-- content -->
@@ -490,7 +493,7 @@ def setCookies(clear=False):
         expire = 63072000                           # 2 years in seconds
     for key in ('hour', 'minute', 'day', 'month', 'year', 'now', 'utc', 'tzname', 'city', 'lat', 'long', 'elev', 'save'):
         cookie[key] = params[key]
-        cookie[key]['path'] = '/ephem'
+        cookie[key]['path'] = '/ephem'              # FIXME: DOes this need to be tied to ephem_url?
         if params[key]:                             # avoid None or False params
             cookie[key]['expires'] = expire
         else:                                       # the purpose of this is to expire existing cookie where the value has been changed to None or False
@@ -720,12 +723,13 @@ def renderForm():
     else:
         form['altazchecked'] = ('',checked)
 
-    print"""<div id="input">
-    <form action="/ephem/index.cgi" method="post">
+    format = """<div id="input">
+    <form action="%s/index.cgi" method="post">
     <fieldset><legend><b>Time &amp; Date</b></legend>
     <table id="date_table">
     <tr align="center"><td>hour</td><td>minute</td><td>day</td><td>month</td><td>year</td><td> </td><td>Now</td></tr>
     <tr align="right"><td><select name="hour" onfocus="uncheckNow()">"""
+    print format % ephem_url
     print hours
     print """</select></td>
         <td>:<select name="minute" onfocus="uncheckNow()">"""
