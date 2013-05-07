@@ -1,0 +1,7 @@
+Saint Aardvark's notes
+======================
+
+* Use pythonbrew to install version 2.7.2
+* pythonbrew switch 2.7.2
+* easy_install pyephem
+* easy_install pytz
