@@ -445,7 +445,7 @@ def renderHTMLHead():
             <meta name="keywords" content="ephemeris, online, online epheris, xephem, python, pyephem" />
             <meta name="description" content="web based online ephemeris written in Python using the pyephem module" />
             <link rel="stylesheet" href="%s/ephemeris.css" type="text/css" />
-            <link rel="shortcut icon" href="favicon.ico" />
+            <link rel="shortcut icon" href="/favicon.ico" />
             <script type="text/javascript" srcs="%s/js/sortable.js"></script>
             <title>Online Ephemeris</title>
         </head>
