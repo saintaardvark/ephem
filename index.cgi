@@ -370,7 +370,7 @@ def main():
         print '</table>'
         if params['rasc_finest'] == True:
             print '<p>You asked for the RASC finest list? <b>%s</b></p>' % (params['rasc_finest'])
-            ngc = rasc_finest
+            # ngc = rasc_finest
         if params['timetable'] == True:
             print '<p>You asked for a timetable? <b>%s</b></p>' % (params['timetable'])
             print_timetable(params, home, messiers)
